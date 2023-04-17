@@ -1,24 +1,16 @@
-const argv = require("yargs").argv;
-const { createFile, getFiles, findFile } = require("./files");
+const express = require("express");
+const logger = require("morgan");
+const router = require("./router");
+const app = express();
 
-// TODO: рефакторить
-async function invokeAction({ action, fileName, content }) {
-  switch (action) {
-    case "create":
-      await createFile(fileName, content);
-      break;
+//Підключаємо парсер JSON
+app.use(express.json());
 
-    case "get":
-      await getFiles();
-      break;
+app.use(logger("dev"));
+//слухає з'єднання на порті 3000
+app.listen(3000, () => {
+  console.log("App listening on port 3000!");
+});
 
-    case "find":
-      await findFile(fileName);
-      break;
-
-    default:
-      console.warn("\x1B[31m Unknown action type!");
-  }
-}
-
-invokeAction(argv);
+//підключаємо модуль router.js маршрутизації у додаток:
+app.use("/api/files", router);
